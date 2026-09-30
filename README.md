@@ -1,10 +1,10 @@
 # CallScan
 
-CallScan is an AI-powered web application for customer support agents to review and analyze their calls.
+CallScan is a web application that helps customer support teams analyze their customer calls.
 
-Agents can create an account, upload customer call recordings, and receive AI-generated insights about each conversation.
+Users can create an account, upload call recordings, and get an AI-generated analysis of each conversation. Every user can only see and manage their own calls.
 
-Each agent has access only to their own calls.
+The goal of this project was to build a complete AI-powered workflow, from uploading an audio file to generating useful insights from the conversation.
 
 ---
 
@@ -12,16 +12,16 @@ Each agent has access only to their own calls.
 
 - User registration and login
 - JWT authentication
-- Private calls per user
-- Audio upload
-- AI transcription
-- Call summary generation
+- Private calls for each user
+- Audio file upload
+- Automatic speech transcription
+- AI-generated call summary
 - Category detection
-- Sentiment detection
+- Sentiment analysis
 - Priority detection
 - Recommended actions
 - Call history
-- Call deletion
+- Delete analyzed calls
 
 ---
 
@@ -46,28 +46,87 @@ Each agent has access only to their own calls.
 
 ---
 
-## AI Processing Flow
+## How AI Processing Works
 
-The application processes calls through the following pipeline:
+The main idea behind CallScan is taking an audio recording and turning it into useful information for support teams.
+
+The process works like this:
 
 ```
-Audio Upload
-      |
-      v
-FastAPI Backend
-      |
-      v
-WhisperX Transcription
-      |
-      v
-Transcript Analysis with OpenAI
-      |
-      v
-Summary + Category + Sentiment + Priority + Actions
-      |
-      v
-PostgreSQL Storage
+Customer call recording
+          |
+          v
+     Audio upload
+          |
+          v
+       FastAPI
+          |
+          v
+      WhisperX
+          |
+          v
+    Text transcript
+          |
+          v
+     OpenAI analysis
+          |
+          v
+ Summary, category, sentiment,
+ priority and recommended actions
+          |
+          v
+      PostgreSQL
+          |
+          v
+     React dashboard
 ```
+
+### Speech transcription
+
+When a user uploads a call recording, the backend temporarily processes the audio file and sends it through WhisperX.
+
+WhisperX converts the spoken conversation into text, creating a transcript of the call.
+
+Example:
+
+```
+Audio recording
+        ↓
+WhisperX
+        ↓
+"This customer called because they have a billing problem..."
+```
+
+The generated transcript is then used as input for the AI analysis step.
+
+### AI call analysis
+
+After transcription, the transcript is sent to the OpenAI API.
+
+The model analyzes the conversation and extracts structured information:
+
+- Short summary of the call
+- Main category of the issue
+- Customer sentiment
+- Priority level
+- Recommended next steps
+
+Example result:
+
+```json
+{
+  "summary": "Customer reported an unexpected billing charge.",
+  "category": "billing",
+  "sentiment": "negative",
+  "priority": "MEDIUM",
+  "action_items": [
+    "Review customer invoice",
+    "Contact customer with resolution"
+  ]
+}
+```
+
+The final result is stored in PostgreSQL and displayed in the React dashboard.
 
 ---
 
@@ -83,6 +142,7 @@ backend/
 ├── create_tables.py
 └── main.py
 
+
 frontend/
 └── src/
     ├── components/
@@ -94,12 +154,12 @@ frontend/
 
 ---
 
-# How to run the project
+# Running the Project
 
-The project has two parts:
+The project has two separate parts:
 
-- **Backend** - FastAPI application responsible for users, calls, database operations, transcription and AI analysis.
-- **Frontend** - React application used in the browser.
+- **Backend** - handles authentication, database operations, audio processing and AI analysis.
+- **Frontend** - React application used by users in the browser.
 
 Both applications need to be running.
 
@@ -121,7 +181,7 @@ Activate it on Windows:
 .venv\Scripts\activate
 ```
 
-Install backend dependencies:
+Install dependencies:
 
 ```bash
 pip install -r requirements.txt
@@ -141,19 +201,17 @@ OPENAI_API_KEY=your_openai_api_key
 JWT_SECRET_KEY=your_secret_key
 ```
 
-Variables:
+`DATABASE_URL` is used for connecting to PostgreSQL.
 
-- `DATABASE_URL` - PostgreSQL database connection
-- `OPENAI_API_KEY` - used for AI call analysis
-- `JWT_SECRET_KEY` - used for JWT authentication
+`OPENAI_API_KEY` is required for AI call analysis.
+
+`JWT_SECRET_KEY` is used for creating and validating authentication tokens.
 
 ---
 
 ## Database Setup
 
-Create a PostgreSQL database.
-
-Example:
+Create a PostgreSQL database:
 
 ```
 callscan
@@ -175,7 +233,7 @@ Run:
 python -m uvicorn backend.main:app --reload
 ```
 
-Backend will run at:
+Backend runs on:
 
 ```
 http://127.0.0.1:8000
@@ -205,13 +263,13 @@ Install packages:
 npm install
 ```
 
-Start the React application:
+Start the application:
 
 ```bash
 npm run dev
 ```
 
-Frontend will run at:
+Frontend runs on:
 
 ```
 http://localhost:5173
@@ -222,27 +280,10 @@ http://localhost:5173
 ## Application Flow
 
 1. User creates an account
-2. User logs in and receives a JWT token
+2. User logs in and receives an authentication token
 3. User uploads a customer call recording
 4. Backend processes the audio
-5. WhisperX generates the transcript
-6. OpenAI analyzes the conversation
-7. Results are stored in PostgreSQL
-8. User can review the call analysis in the dashboard
-
----
-
-## Example AI Analysis
-
-```json
-{
-  "summary": "Customer reported a billing issue.",
-  "category": "billing",
-  "sentiment": "negative",
-  "priority": "MEDIUM",
-  "action_items": [
-    "Review customer invoice",
-    "Contact customer with resolution"
-  ]
-}
-```
+5. WhisperX creates the transcript
+6. OpenAI analyzes the transcript
+7. Results are saved in PostgreSQL
+8. User can review the analysis in the dashboard
