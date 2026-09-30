@@ -1,16 +1,8 @@
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, Text, DateTime, JSON, ForeignKey
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, JSON, String, Text
 
-from database import Base
-
-
-class User(Base):
-    __tablename__ = "users"
-
-    id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, index=True, nullable=False)
-    hashed_password = Column(String, nullable=False)
+from backend.database import Base
 
 
 class Call(Base):
@@ -21,7 +13,7 @@ class Call(Base):
     user_id = Column(
         Integer,
         ForeignKey("users.id"),
-        nullable=False
+        nullable=False,
     )
 
     filename = Column(String)
@@ -35,5 +27,5 @@ class Call(Base):
 
     created_at = Column(
         DateTime,
-        default=datetime.utcnow
+        default=datetime.utcnow,
     )
