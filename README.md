@@ -134,22 +134,28 @@ The final result is stored in PostgreSQL and displayed in the React dashboard.
 
 ```
 backend/
-├── models/
-├── routers/
-├── services/
-├── database.py
-├── security.py
-├── create_tables.py
-└── main.py
+├── app/
+│   ├── api/          # routes: auth, calls
+│   ├── core/         # config, security
+│   ├── db/           # base, database
+│   ├── models/       # User, Call
+│   ├── schemas/      # Pydantic schemas
+│   ├── services/     # transcription, analysis
+│   └── main.py
+├── .env.example
+└── requirements.txt
 
 
 frontend/
-└── src/
-    ├── components/
-    ├── pages/
-    ├── services/
-    ├── App.jsx
-    └── main.jsx
+├── src/
+│   ├── components/
+│   ├── hooks/        # useAuth, useCalls
+│   ├── pages/        # AuthPage, DashboardPage
+│   ├── services/     # api, authService, callService
+│   ├── styles/
+│   ├── App.jsx
+│   └── main.jsx
+└── .env.example
 ```
 
 ---
@@ -167,7 +173,11 @@ Both applications need to be running.
 
 # Backend Setup
 
-Open a terminal in the main project folder.
+Open a terminal and go to the backend folder:
+
+```bash
+cd backend
+```
 
 Create a virtual environment:
 
@@ -191,7 +201,7 @@ pip install -r requirements.txt
 
 ## Environment Variables
 
-Create a `.env` file in the project root.
+Create a `.env` file in the `backend` folder (see `backend/.env.example`).
 
 Example:
 
@@ -217,20 +227,16 @@ Create a PostgreSQL database:
 callscan
 ```
 
-Create database tables:
-
-```bash
-python backend/create_tables.py
-```
+Database tables are created automatically when the backend starts.
 
 ---
 
 ## Start Backend
 
-Run:
+From the `backend` folder, run:
 
 ```bash
-python -m uvicorn backend.main:app --reload
+python -m uvicorn app.main:app --reload
 ```
 
 Backend runs on:
@@ -261,6 +267,12 @@ Install packages:
 
 ```bash
 npm install
+```
+
+Create a `.env` file in the `frontend` folder (see `frontend/.env.example`):
+
+```env
+VITE_API_URL=http://127.0.0.1:8000
 ```
 
 Start the application:
