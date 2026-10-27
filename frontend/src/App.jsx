@@ -9,10 +9,13 @@ import {
   loginUser,
   registerUser,
   getCurrentUser,
+} from "./services/authService";
+
+import {
   getCalls,
   uploadCall as uploadCallRequest,
   deleteCall as deleteCallRequest,
-} from "./services/api";
+} from "./services/callService";
 
 
 function App() {
