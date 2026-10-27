@@ -2,7 +2,7 @@ from datetime import datetime
 
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, JSON, String, Text
 
-from backend.database import Base
+from app.db.base import Base
 
 
 class Call(Base):

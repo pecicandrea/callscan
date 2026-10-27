@@ -15,7 +15,7 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_HOURS = 24
 
 
-secret_path = Path(__file__).with_name(".jwt-secret")
+secret_path = Path(__file__).resolve().parents[2] / ".jwt-secret"
 
 if not SECRET_KEY:
     try:

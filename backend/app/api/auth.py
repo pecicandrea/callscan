@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, EmailStr
 
-from backend.database import SessionLocal
-from backend.models import User
-from backend.security import create_token, get_current_user, password_context
+from app.db.database import SessionLocal
+from app.models import User
+from app.core.security import create_token, get_current_user, password_context
 
 router = APIRouter(
     tags=["Authentication"],

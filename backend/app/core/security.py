@@ -5,7 +5,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
-from backend.config import ACCESS_TOKEN_EXPIRE_HOURS, ALGORITHM, SECRET_KEY
+from app.core.config import ACCESS_TOKEN_EXPIRE_HOURS, ALGORITHM, SECRET_KEY
 
 
 password_context = CryptContext(

@@ -1,20 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException
-
-from backend.database import SessionLocal
-from backend.models import Call
-from backend.security import get_current_user
-from backend.services.transcription import transcribe_audio
-from backend.services.analysis import analyze_call
 import os
 import tempfile
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from fastapi.concurrency import run_in_threadpool
 
-from backend.database import SessionLocal
-from backend.models import Call
-from backend.security import get_current_user
-from backend.services.transcription import transcribe_audio
+from app.core.security import get_current_user
+from app.db.database import SessionLocal
+from app.models import Call
+from app.services.analysis import analyze_call
+from app.services.transcription import transcribe_audio
+
+
 router = APIRouter(
     tags=["Calls"],
 )
