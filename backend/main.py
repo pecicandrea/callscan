@@ -1,10 +1,8 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
 
 from backend.routers import auth, calls
-load_dotenv()
 
 app = FastAPI()
 
