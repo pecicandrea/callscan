@@ -43,6 +43,11 @@ async def upload_call(
             transcribe_audio,
             temp_path,
         )
+    except Exception:
+        raise HTTPException(
+            status_code=400,
+            detail="Could not read the audio file",
+        )
     finally:
         os.remove(temp_path)
 

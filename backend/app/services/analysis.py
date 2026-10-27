@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from openai import OpenAI
+from openai import OpenAI, OpenAIError
 
 from app.core.config import OPENAI_API_KEY
 from app.schemas.call import CallAnalysis
@@ -9,9 +9,10 @@ client = OpenAI(api_key=OPENAI_API_KEY)
 
 
 def analyze_call(text):
-    response = client.responses.parse(
-        model="gpt-5-nano",
-        input=f"""
+    try:
+        response = client.responses.parse(
+            model="gpt-5-nano",
+            input=f"""
 Analyze this customer support call.
 
 Write the analysis like internal notes written by a customer support agent.
@@ -59,8 +60,13 @@ HIGH:
 Customer call:
 {text}
 """,
-        text_format=CallAnalysis,
-    )
+            text_format=CallAnalysis,
+        )
+    except OpenAIError:
+        raise HTTPException(
+            status_code=502,
+            detail="AI analysis failed. Please try again later.",
+        )
 
     if response.output_parsed is None:
         raise HTTPException(
