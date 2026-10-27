@@ -37,7 +37,7 @@ function useAuth({ onSessionExpired }) {
       try {
         const response = await getCurrentUser(token);
 
-        if (response.status === 401 || response.status === 404) {
+        if (response.status === 401) {
           localStorage.removeItem("token");
           setToken(null);
           setAuthError("Your session has expired. Please sign in again.");

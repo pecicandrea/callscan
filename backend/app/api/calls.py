@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.core.security import get_current_user
 from app.db.database import get_db
-from app.models import Call
+from app.models import Call, User
 from app.services.analysis import analyze_call
 from app.services.transcription import transcribe_audio
 
@@ -20,7 +20,7 @@ router = APIRouter(
 @router.post("/calls/upload")
 async def upload_call(
     file: UploadFile = File(...),
-    user_id: int = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     if not (file.content_type or "").startswith("audio/"):
@@ -63,7 +63,7 @@ async def upload_call(
     )
 
     new_call = Call(
-        user_id=user_id,
+        user_id=current_user.id,
         filename=file.filename,
         language=transcript["language"],
         transcript=transcript["text"],
@@ -90,10 +90,10 @@ async def upload_call(
 @router.get("/calls")
 def get_calls(
     priority: str | None = None,
-    user_id: int = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    query = db.query(Call).filter(Call.user_id == user_id)
+    query = db.query(Call).filter(Call.user_id == current_user.id)
 
     if priority is not None:
         query = query.filter(Call.priority == priority)
@@ -106,14 +106,14 @@ def get_calls(
 @router.get("/calls/{call_id}")
 def get_call(
     call_id: int,
-    user_id: int = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     call = (
         db.query(Call)
         .filter(
             Call.id == call_id,
-            Call.user_id == user_id,
+            Call.user_id == current_user.id,
         )
         .first()
     )
@@ -130,14 +130,14 @@ def get_call(
 @router.delete("/calls/{call_id}")
 def delete_call(
     call_id: int,
-    user_id: int = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     call = (
         db.query(Call)
         .filter(
             Call.id == call_id,
-            Call.user_id == user_id,
+            Call.user_id == current_user.id,
         )
         .first()
     )

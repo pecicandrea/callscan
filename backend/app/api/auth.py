@@ -77,19 +77,8 @@ def login(
 
 
 @router.get("/me")
-def get_me(
-    user_id: int = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    user = db.query(User).filter(User.id == user_id).first()
-
-    if user is None:
-        raise HTTPException(
-            status_code=404,
-            detail="User not found",
-        )
-
+def get_me(current_user: User = Depends(get_current_user)):
     return {
-        "id": user.id,
-        "email": user.email,
+        "id": current_user.id,
+        "email": current_user.email,
     }

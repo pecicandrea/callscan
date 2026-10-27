@@ -4,8 +4,11 @@ from fastapi import Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+from sqlalchemy.orm import Session
 
 from app.core.config import ACCESS_TOKEN_EXPIRE_HOURS, ALGORITHM, SECRET_KEY
+from app.db.database import get_db
+from app.models.user import User
 
 
 password_context = CryptContext(
@@ -36,7 +39,7 @@ def create_access_token(user_id: int) -> str:
     )
 
     data = {
-        "user_id": user_id,
+        "sub": str(user_id),
         "exp": expiration,
     }
 
@@ -51,20 +54,30 @@ def create_access_token(user_id: int) -> str:
 
 def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
-):
-    token = credentials.credentials
+    db: Session = Depends(get_db),
+) -> User:
+    credentials_exception = HTTPException(
+        status_code=401,
+        detail="Could not validate credentials",
+    )
 
     try:
         data = jwt.decode(
-            token,
+            credentials.credentials,
             SECRET_KEY,
             algorithms=[ALGORITHM],
         )
 
-        return data["user_id"]
+        user_id = data.get("sub")
 
-    except (JWTError, KeyError, TypeError):
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid token",
-        )
+        if user_id is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+
+    user = db.query(User).filter(User.id == int(user_id)).first()
+
+    if user is None:
+        raise credentials_exception
+
+    return user
