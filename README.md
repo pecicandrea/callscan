@@ -208,14 +208,14 @@ Example:
 ```env
 DATABASE_URL=postgresql://username:password@localhost:5432/callscan
 OPENAI_API_KEY=your_openai_api_key
-JWT_SECRET_KEY=your_secret_key
+SECRET_KEY=your_secret_key
 ```
 
 `DATABASE_URL` is used for connecting to PostgreSQL.
 
 `OPENAI_API_KEY` is required for AI call analysis.
 
-`JWT_SECRET_KEY` is used for creating and validating authentication tokens.
+`SECRET_KEY` is used for signing and validating authentication tokens. Use a long random string, for example the output of `python -c "import secrets; print(secrets.token_urlsafe(48))"`.
 
 ---
 
