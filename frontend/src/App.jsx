@@ -1,171 +1,41 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import "./App.css";
 
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 
-import {
-  loginUser,
-  registerUser,
-  getCurrentUser,
-} from "./services/authService";
-
-import {
-  getCalls,
-  uploadCall as uploadCallRequest,
-  deleteCall as deleteCallRequest,
-} from "./services/callService";
+import useAuth from "./hooks/useAuth";
+import useCalls from "./hooks/useCalls";
 
 
 function App() {
-  const [calls, setCalls] = useState([]);
-  const [file, setFile] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [selectedCall, setSelectedCall] = useState(null);
+  const auth = useAuth();
+  const calls = useCalls(auth.token);
 
-  const [token, setToken] = useState(localStorage.getItem("token"));
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [registerMode, setRegisterMode] = useState(false);
-  const [authError, setAuthError] = useState("");
-
-  const [user, setUser] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
 
 
-  const loadCalls = async () => {
-    const response = await getCalls(token);
-
-    if (response.ok) {
-      const data = await response.json();
-      setCalls(data);
-    }
-  };
-
-
-  useEffect(() => {
-    if (!token) {
-      return;
-    }
-
-    const loadData = async () => {
-      const callsResponse = await getCalls(token);
-
-      if (callsResponse.ok) {
-        const callsData = await callsResponse.json();
-        setCalls(callsData);
-      }
-
-      const userResponse = await getCurrentUser(token);
-
-      if (userResponse.ok) {
-        const userData = await userResponse.json();
-        setUser(userData);
-      }
-    };
-
-    loadData();
-  }, [token]);
-
-
-  const login = async () => {
-    setAuthError("");
-
-    const response = await loginUser(email, password);
-    const data = await response.json();
-
-    if (!response.ok) {
-      if (response.status === 422) {
-        setAuthError("Please enter a valid email address.");
-      } else {
-        setAuthError(data.detail || "Login failed.");
-      }
-
-      return;
-    }
-
-    localStorage.setItem("token", data.access_token);
-    setToken(data.access_token);
-  };
-
-
-  const register = async () => {
-    setAuthError("");
-
-    const response = await registerUser(email, password);
-    const data = await response.json();
-
-    if (!response.ok) {
-      if (response.status === 422) {
-        setAuthError("Please enter a valid email address.");
-      } else {
-        setAuthError(data.detail || "Registration failed.");
-      }
-
-      return;
-    }
-
-    setRegisterMode(false);
-    setAuthError("");
-  };
-
-
   const logout = () => {
-    localStorage.removeItem("token");
-
-    setToken(null);
-    setCalls([]);
-    setSelectedCall(null);
-    setUser(null);
+    auth.logout();
+    calls.resetCalls();
     setProfileOpen(false);
   };
 
 
-  const uploadCall = async () => {
-    if (!file) return;
-
-    setLoading(true);
-
-    const response = await uploadCallRequest(token, file);
-
-    if (response.ok) {
-      await loadCalls();
-      setFile(null);
-    }
-
-    setLoading(false);
-  };
-
-
-  const deleteCall = async (event, id) => {
-    event.stopPropagation();
-
-    const response = await deleteCallRequest(token, id);
-
-    if (response.ok) {
-      setCalls(calls.filter((call) => call.id !== id));
-
-      if (selectedCall?.id === id) {
-        setSelectedCall(null);
-      }
-    }
-  };
-
-
-  if (!token) {
+  if (!auth.token) {
     return (
       <Auth
-        email={email}
-        setEmail={setEmail}
-        password={password}
-        setPassword={setPassword}
-        registerMode={registerMode}
-        setRegisterMode={setRegisterMode}
-        authError={authError}
-        setAuthError={setAuthError}
-        login={login}
-        register={register}
+        email={auth.email}
+        setEmail={auth.setEmail}
+        password={auth.password}
+        setPassword={auth.setPassword}
+        registerMode={auth.registerMode}
+        setRegisterMode={auth.setRegisterMode}
+        authError={auth.authError}
+        setAuthError={auth.setAuthError}
+        login={auth.login}
+        register={auth.register}
       />
     );
   }
@@ -173,17 +43,17 @@ function App() {
 
   return (
     <Dashboard
-      calls={calls}
-      user={user}
+      calls={calls.calls}
+      user={auth.user}
       profileOpen={profileOpen}
       setProfileOpen={setProfileOpen}
       logout={logout}
-      setFile={setFile}
-      loading={loading}
-      uploadCall={uploadCall}
-      setSelectedCall={setSelectedCall}
-      deleteCall={deleteCall}
-      selectedCall={selectedCall}
+      setFile={calls.setFile}
+      loading={calls.loading}
+      uploadCall={calls.uploadCall}
+      setSelectedCall={calls.setSelectedCall}
+      deleteCall={calls.deleteCall}
+      selectedCall={calls.selectedCall}
     />
   );
 }
