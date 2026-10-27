@@ -4,7 +4,7 @@ import CallCard from "../components/CallCard";
 import CallDetails from "../components/CallDetails";
 
 
-function Dashboard({
+function DashboardPage({
   calls,
   user,
   profileOpen,
@@ -80,4 +80,4 @@ function Dashboard({
 }
 
 
-export default Dashboard;
+export default DashboardPage;

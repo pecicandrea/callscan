@@ -2,8 +2,8 @@ import { useState } from "react";
 
 import "./App.css";
 
-import Auth from "./pages/Auth";
-import Dashboard from "./pages/Dashboard";
+import AuthPage from "./pages/AuthPage";
+import DashboardPage from "./pages/DashboardPage";
 
 import useAuth from "./hooks/useAuth";
 import useCalls from "./hooks/useCalls";
@@ -25,7 +25,7 @@ function App() {
 
   if (!auth.token) {
     return (
-      <Auth
+      <AuthPage
         email={auth.email}
         setEmail={auth.setEmail}
         password={auth.password}
@@ -42,7 +42,7 @@ function App() {
 
 
   return (
-    <Dashboard
+    <DashboardPage
       calls={calls.calls}
       user={auth.user}
       profileOpen={profileOpen}

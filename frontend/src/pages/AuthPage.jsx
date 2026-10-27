@@ -1,4 +1,4 @@
-function Auth({
+function AuthPage({
   email,
   setEmail,
   password,
@@ -72,4 +72,4 @@ function Auth({
   );
 }
 
-export default Auth;
+export default AuthPage;
