@@ -1,22 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel, EmailStr
 
 from app.db.database import SessionLocal
 from app.models import User
 from app.core.security import create_token, get_current_user, password_context
+from app.schemas.user import UserLogin, UserRegister
 
 router = APIRouter(
     tags=["Authentication"],
 )
-
-
-class UserRegister(BaseModel):
-    email: EmailStr
-    password: str
-
-class UserLogin(BaseModel):
-    email: EmailStr
-    password: str
 
 
 @router.post("/register")

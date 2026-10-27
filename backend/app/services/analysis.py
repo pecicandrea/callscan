@@ -1,39 +1,12 @@
-from typing import Literal
-
 from fastapi import HTTPException
 from openai import OpenAI
-from pydantic import BaseModel
 
 from app.core.config import OPENAI_API_KEY
+from app.schemas.call import CallAnalysis
 
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 
-
-class CallAnalysis(BaseModel):
-    summary: str
-
-    category: Literal[
-        "billing",
-        "technical_support",
-        "account",
-        "complaint",
-        "general",
-    ]
-
-    sentiment: Literal[
-        "positive",
-        "neutral",
-        "negative",
-    ]
-
-    priority: Literal[
-        "LOW",
-        "MEDIUM",
-        "HIGH",
-    ]
-
-    action_items: list[str]
 
 def analyze_call(text):
     response = client.responses.parse(
