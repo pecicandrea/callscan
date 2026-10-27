@@ -53,6 +53,7 @@ function App() {
       setFile={calls.setFile}
       loading={calls.loading}
       uploadCall={calls.uploadCall}
+      error={calls.error}
       setSelectedCall={calls.setSelectedCall}
       deleteCall={calls.deleteCall}
       selectedCall={calls.selectedCall}

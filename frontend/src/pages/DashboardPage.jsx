@@ -13,6 +13,7 @@ function DashboardPage({
   setFile,
   loading,
   uploadCall,
+  error,
   setSelectedCall,
   deleteCall,
   selectedCall,
@@ -31,6 +32,7 @@ function DashboardPage({
         setFile={setFile}
         loading={loading}
         uploadCall={uploadCall}
+        error={error}
       />
 
       <section className="calls-section">

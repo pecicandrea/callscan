@@ -68,6 +68,15 @@
   color: #e8e8f3;
 }
 
+.upload-error {
+  margin: 14px 0 0;
+  padding: 10px 14px;
+  background: rgba(255, 225, 229, 0.12);
+  border: 1px solid rgba(255, 158, 170, 0.45);
+  border-radius: 10px;
+  color: #ffc9d0;
+}
+
 .section-heading {
   display: flex;
   justify-content: space-between;

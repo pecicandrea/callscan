@@ -38,8 +38,16 @@ function useAuth() {
   const login = async () => {
     setAuthError("");
 
-    const response = await loginUser(email, password);
-    const data = await response.json();
+    let response;
+
+    try {
+      response = await loginUser(email, password);
+    } catch {
+      setAuthError("Could not connect to the server.");
+      return;
+    }
+
+    const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
       if (response.status === 422) {
@@ -59,8 +67,16 @@ function useAuth() {
   const register = async () => {
     setAuthError("");
 
-    const response = await registerUser(email, password);
-    const data = await response.json();
+    let response;
+
+    try {
+      response = await registerUser(email, password);
+    } catch {
+      setAuthError("Could not connect to the server.");
+      return;
+    }
+
+    const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
       if (response.status === 422) {

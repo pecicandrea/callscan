@@ -2,6 +2,7 @@ function UploadCall({
   setFile,
   loading,
   uploadCall,
+  error,
 }) {
   return (
     <section className="upload-section">
@@ -26,6 +27,8 @@ function UploadCall({
           {loading ? "Analyzing..." : "Analyze call →"}
         </button>
       </div>
+
+      {error && <p className="upload-error">{error}</p>}
     </section>
   );
 }
