@@ -1,6 +1,8 @@
 import { useState } from "react";
 
-import "./App.css";
+import "./styles/global.css";
+import "./styles/auth.css";
+import "./styles/dashboard.css";
 
 import AuthPage from "./pages/AuthPage";
 import DashboardPage from "./pages/DashboardPage";
