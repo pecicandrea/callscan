@@ -12,10 +12,12 @@ import useCalls from "./hooks/useCalls";
 
 
 function App() {
-  const auth = useAuth();
-  const calls = useCalls(auth.token);
-
   const [profileOpen, setProfileOpen] = useState(false);
+
+  const auth = useAuth({
+    onSessionExpired: () => setProfileOpen(false),
+  });
+  const calls = useCalls(auth.token, auth.expireSession);
 
 
   const logout = () => {

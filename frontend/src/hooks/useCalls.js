@@ -7,7 +7,7 @@ import {
 } from "../services/callService";
 
 
-function useCalls(token) {
+function useCalls(token, onUnauthorized) {
   const [calls, setCalls] = useState([]);
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -15,8 +15,26 @@ function useCalls(token) {
   const [error, setError] = useState("");
 
 
+  const resetCalls = () => {
+    setCalls([]);
+    setSelectedCall(null);
+    setError("");
+  };
+
+
+  const handleUnauthorized = () => {
+    resetCalls();
+    onUnauthorized();
+  };
+
+
   const loadCalls = async () => {
     const response = await getCalls(token);
+
+    if (response.status === 401) {
+      handleUnauthorized();
+      return;
+    }
 
     if (response.ok) {
       const data = await response.json();
@@ -34,6 +52,7 @@ function useCalls(token) {
       try {
         const response = await getCalls(token);
 
+        // An expired token on page load is handled by useAuth through /me.
         if (response.ok) {
           const data = await response.json();
           setCalls(data);
@@ -59,6 +78,11 @@ function useCalls(token) {
     try {
       const response = await uploadCallRequest(token, file);
 
+      if (response.status === 401) {
+        handleUnauthorized();
+        return;
+      }
+
       if (!response.ok) {
         const data = await response.json().catch(() => ({}));
         setError(data.detail || "Could not analyze the call. Please try again.");
@@ -82,6 +106,11 @@ function useCalls(token) {
     try {
       const response = await deleteCallRequest(token, id);
 
+      if (response.status === 401) {
+        handleUnauthorized();
+        return;
+      }
+
       if (!response.ok) {
         setError("Could not delete the call. Please try again.");
         return;
@@ -95,13 +124,6 @@ function useCalls(token) {
     } catch {
       setError("Could not connect to the server. Please try again.");
     }
-  };
-
-
-  const resetCalls = () => {
-    setCalls([]);
-    setSelectedCall(null);
-    setError("");
   };
 
 

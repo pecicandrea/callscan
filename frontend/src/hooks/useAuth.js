@@ -7,7 +7,7 @@ import {
 } from "../services/authService";
 
 
-function useAuth() {
+function useAuth({ onSessionExpired }) {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -17,17 +17,39 @@ function useAuth() {
   const [user, setUser] = useState(null);
 
 
+  const expireSession = () => {
+    localStorage.removeItem("token");
+
+    setToken(null);
+    setUser(null);
+    setAuthError("Your session has expired. Please sign in again.");
+
+    onSessionExpired();
+  };
+
+
   useEffect(() => {
     if (!token) {
       return;
     }
 
     const loadUser = async () => {
-      const response = await getCurrentUser(token);
+      try {
+        const response = await getCurrentUser(token);
 
-      if (response.ok) {
-        const data = await response.json();
-        setUser(data);
+        if (response.status === 401 || response.status === 404) {
+          localStorage.removeItem("token");
+          setToken(null);
+          setAuthError("Your session has expired. Please sign in again.");
+          return;
+        }
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data);
+        }
+      } catch {
+        // The calls request shows the connection error.
       }
     };
 
@@ -115,6 +137,7 @@ function useAuth() {
     login,
     register,
     logout,
+    expireSession,
   };
 }
 
