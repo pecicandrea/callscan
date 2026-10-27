@@ -15,7 +15,22 @@ password_context = CryptContext(
 
 security = HTTPBearer()
 
-def create_token(user_id):
+
+def hash_password(password: str) -> str:
+    return password_context.hash(password)
+
+
+def verify_password(
+    plain_password: str,
+    hashed_password: str,
+) -> bool:
+    return password_context.verify(
+        plain_password,
+        hashed_password,
+    )
+
+
+def create_access_token(user_id: int) -> str:
     expiration = datetime.now(timezone.utc) + timedelta(
         hours=ACCESS_TOKEN_EXPIRE_HOURS,
     )
